@@ -1,0 +1,29 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"ecs:CreateCluster",
+				"ecs:DeleteCluster",
+				"ecs:DescribeClusters",
+				"ecs:RegisterTaskDefinition",
+				"ecs:DeregisterTaskDefinition",
+				"ecs:CreateService",
+				"ecs:UpdateService",
+				"ecs:DeleteService",
+				"ecs:DescribeServices",
+				"ecs:DescribeTaskDefinition",
+				"iam:CreateRole",
+				"iam:DeleteRole",
+				"iam:AttachRolePolicy",
+				"iam:DetachRolePolicy",
+				"iam:PassRole",
+				"iam:GetRole",
+				"iam:ListRolePolicies",
+				"iam:ListInstanceProfilesForRole"
+			],
+			"Resource": "*"
+		}
+	]
+}
