@@ -18,7 +18,7 @@ First, we'll set up Terraform configurations to create the necessary ECS infrast
 
 ### `main.tf`
 
-\```hcl
+```hcl
 # main.tf
 
 provider "aws" {
@@ -49,11 +49,11 @@ resource "aws_iam_role_policy_attachment" "ecs_policy_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = aws_iam_policy.ecs_policy.arn
 }
-\```
+```
 
 ### `tf-ecs-task-execution.json`
 
-\```json
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -69,11 +69,11 @@ resource "aws_iam_role_policy_attachment" "ecs_policy_attachment" {
     }
   ]
 }
-\```
+```
 
 ### `tf-ecs-policy.json`
 
-\```json
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -103,11 +103,11 @@ resource "aws_iam_role_policy_attachment" "ecs_policy_attachment" {
     }
   ]
 }
-\```
+```
 
 ### `tf-iam-role.json`
 
-\```json
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -137,7 +137,7 @@ resource "aws_iam_role_policy_attachment" "ecs_policy_attachment" {
     }
   ]
 }
-\```
+```
 
 ## Building and Pushing the Docker Image
 
@@ -145,7 +145,7 @@ Now, let's build the Docker image for our Python application and push it to ECR.
 
 ### `app.py`
 
-\```python
+```python
 # app.py
 
 from flask import Flask
@@ -158,11 +158,11 @@ def hello_world():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
-\```
+```
 
 ### `Dockerfile`
 
-\```Dockerfile
+```Dockerfile
 # Dockerfile
 
 FROM python:3.8-slim-buster
@@ -175,39 +175,39 @@ RUN pip3 install -r requirements.txt
 COPY . .
 
 CMD ["python3", "app.py"]
-\```
+```
 
 ### Steps to Build and Push the Docker Image
 
 1. **Authenticate Docker to ECR**
 
-    \```sh
+    ```sh
     aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin <your_ecr_registry_url>
-    \```
+    ```
 
 2. **Build the Docker Image**
 
-    \```sh
+    ```sh
     docker build -t py-container-app .
-    \```
+    ```
 
 3. **Tag the Docker Image**
 
-    \```sh
+    ```sh
     docker tag py-container-app:latest <your_ecr_registry_url>/py-container-app:latest
-    \```
+    ```
 
 4. **Push the Docker Image to ECR**
 
-    \```sh
+    ```sh
     docker push <your_ecr_registry_url>/py-container-app:latest
-    \```
+    ```
 
 ## Deploying the Application on ECS
 
 With the Docker image pushed to ECR and the ECS infrastructure set up using Terraform, you can now deploy your application.
 
-\```sh
+```sh
 terraform init
 terraform apply
-\```
+```
