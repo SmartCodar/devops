@@ -1,182 +1,426 @@
 
-# Deploying a Python Flask Application with Docker on AWS EC2
+# Introduction to Docker
 
-## Introduction
+Docker is an open platform for developing, shipping, and running applications. It enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.
 
-### What is Docker?
+## Installing Docker
 
-**Docker** is an open-source platform that automates the deployment, scaling, and management of applications. Docker packages software into standardized units called containers that have everything the software needs to run, including libraries, system tools, code, and runtime.
+### Step 1: Update Your Package Index
 
-### What is a Container?
+Updating the package index ensures you have the latest information about available packages:
 
-A **container** is a lightweight, standalone, executable package of software that includes everything needed to run an application: code, runtime, system tools, libraries, and settings. Containers are isolated from one another and the host system, ensuring that they work uniformly despite differences between development and staging.
-
-## Example: Python Flask Application with Endpoints
-
-In this article, we will deploy a Python Flask application with Docker on an AWS EC2 instance. This application includes the following endpoints:
-- `/`: Returns a "Hello World" message.
-- `/authenticate`: Takes a username and password in the body of a JSON request and returns a token if the credentials are correct.
-
-### app.py
-
-```python
-from flask import Flask, request, jsonify
-import logging
-
-app = Flask(__name__)
-
-# Setup logging
-logging.basicConfig(level=logging.DEBUG)
-
-@app.route('/')
-def hello():
-    app.logger.info("Serving the Hello World response")
-    app.logger.info("Diagnostic Message : Inside the Hello Method.......")
-    return "Hello World! This is from Container Deployed using Docker"
-
-@app.route('/authenticate', methods=['POST'])
-def authenticate():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-
-    if username == "Ameet" and password == "Parse":
-        app.logger.info(f"Successful login for user: {username}")
-        return jsonify({"token": "some-token-value"}), 200
-    else:
-        app.logger.warning(f"Failed login attempt for user: {username}")
-        return jsonify({"error": "Invalid username or password"}), 401
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+```bash
+sudo apt-get update
 ```
 
-### Dockerfile
+### Step 2: Install Required Packages
 
-```Dockerfile
-FROM python:3.8-slim-buster
+Install packages that allow apt to use packages over HTTPS and manage certificates:
 
-WORKDIR /app
-
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
-
-COPY . .
-
-CMD ["python3", "app.py"]
+```bash
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
 ```
 
-### requirements.txt
+### Step 3: Add Docker’s Official GPG Key
 
-```txt
-Flask==2.1.1
+This step adds Docker's official GPG key, which is used to verify the integrity of the packages:
+
+```bash
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 ```
 
-## How to Build and Run the Docker Container
+### Step 4: Add the Docker Repository
 
-### Prerequisites
+Adding Docker’s repository to your sources list allows you to install Docker from Docker's repositories:
 
-- Docker and AWS CLI should already be installed and configured on your system.
-- An EC2 instance running on AWS.
+```bash
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+```
 
-### Steps
+### Step 5: Update Your Package Index Again
 
-1. **Create and Upload Files**
+After adding Docker's repository, update your package index again to include packages from the new repository:
 
-   Ensure you have the `app.py`, `Dockerfile`, and `requirements.txt` files in your project directory.
+```bash
+sudo apt-get update
+```
 
-2. **Build the Docker Image**
+### Step 6: Install Docker
 
-   Open a terminal and navigate to your project directory. Build the Docker image with the following command:
+Finally, install Docker:
 
-   ```sh
-   docker build -t my-flask-app .
-   ```
+```bash
+sudo apt-get install docker-ce
+```
 
-3. **Run the Docker Container**
+### Step 7: Verify Docker Installation
 
-   Run the Docker container on port 80 using the following command:
+Verify that Docker is installed correctly by running the hello-world image:
 
-   ```sh
-   docker run -d -p 80:80 my-flask-app
-   ```
+```bash
+sudo docker run hello-world
+```
 
-4. **Verify the Application**
+## Docker Commands Cheat Sheet
 
-   Open your web browser and navigate to your EC2 instance's public IP address. You should see the "Hello World" message.
+Here are the top 50 Docker commands with descriptions and examples:
 
-   To test the `/authenticate` endpoint, you can use a tool like `curl` or Postman:
+### 1. Check Docker Version
 
-   ```sh
-   curl -X POST http://<your-ec2-public-ip>/authenticate -H "Content-Type: application/json" -d '{"username": "Ameet", "password": "Parse"}'
-   ```
+```bash
+docker --version
+```
+Displays the installed Docker version.
 
-### Managing Docker Containers
+### 2. Pull an Image from Docker Hub
 
-1. **List Running Containers**
+```bash
+docker pull <image_name>
+```
+Example:
 
-   To list all running Docker containers, use the following command:
+```bash
+docker pull nginx
+```
+Pulls the NGINX image from Docker Hub.
 
-   ```sh
-   docker ps
-   ```
+### 3. List Docker Images
 
-2. **Stop a Running Container**
+```bash
+docker images
+```
+Lists all Docker images on your local machine.
 
-   To stop a running Docker container, use the following command with the container ID or name:
+### 4. Run a Docker Container
 
-   ```sh
-   docker stop <container_id_or_name>
-   ```
+```bash
+docker run <image_name>
+```
+Example:
 
-3. **Stop All Running Containers**
+```bash
+docker run nginx
+```
+Runs a container from the NGINX image.
 
-   To stop all running Docker containers, use the following command:
+### 5. List Running Containers
 
-   ```sh
-   docker stop $(docker ps -q)
-   ```
+```bash
+docker ps
+```
+Lists all currently running Docker containers.
 
-4. **Remove a Docker Container**
+### 6. List All Containers
 
-   To remove a stopped Docker container, use the following command with the container ID or name:
+```bash
+docker ps -a
+```
+Lists all Docker containers, including stopped ones.
 
-   ```sh
-   docker rm <container_id_or_name>
-   ```
+### 7. Start a Container
 
-5. **Remove All Stopped Containers**
+```bash
+docker start <container_id>
+```
+Starts a stopped Docker container.
 
-   To remove all stopped Docker containers, use the following command:
+### 8. Stop a Container
 
-   ```sh
-   docker rm $(docker ps -a -q)
-   ```
+```bash
+docker stop <container_id>
+```
+Stops a running Docker container.
 
-6. **View Logs of a Container**
+### 9. Remove a Container
 
-   To view the logs of a running Docker container, use the following command with the container ID or name:
+```bash
+docker rm <container_id>
+```
+Removes a stopped Docker container.
 
-   ```sh
-   docker logs <container_id_or_name>
-   ```
+### 10. Remove an Image
 
-7. **Execute a Command in a Running Container**
+```bash
+docker rmi <image_id>
+```
+Removes a Docker image from your local machine.
 
-   To execute a command inside a running Docker container, use the following command with the container ID or name:
+### 11. Display Container Logs
 
-   ```sh
-   docker exec -it <container_id_or_name> <command>
-   ```
+```bash
+docker logs <container_id>
+```
+Displays the logs from a Docker container.
 
-8. **Get Detailed Information about a Container**
+### 12. Access a Running Container
 
-   To get detailed information about a Docker container, use the following command with the container ID or name:
+```bash
+docker exec -it <container_id> /bin/bash
+```
+Gives you access to the running container's shell.
 
-   ```sh
-   docker inspect <container_id_or_name>
-   ```
+### 13. Display Container Details
 
-## Conclusion
+```bash
+docker inspect <container_id>
+```
+Displays detailed information about a Docker container.
 
-In this article, we've covered the basics of Docker and containers and provided a step-by-step guide to deploying a Python Flask application using Docker on an AWS EC2 instance. We also covered how to manage Docker containers, including starting, stopping, and removing containers, as well as viewing logs and executing commands within containers. By following these steps, you can efficiently deploy and manage containerized applications using Docker.
+### 14. Display Image Details
+
+```bash
+docker inspect <image_id>
+```
+Displays detailed information about a Docker image.
+
+### 15. List Container Processes
+
+```bash
+docker top <container_id>
+```
+Displays the running processes inside a Docker container.
+
+### 16. Pause a Container
+
+```bash
+docker pause <container_id>
+```
+Pauses all processes in a running container.
+
+### 17. Unpause a Container
+
+```bash
+docker unpause <container_id>
+```
+Unpauses all processes in a paused container.
+
+### 18. Restart a Container
+
+```bash
+docker restart <container_id>
+```
+Restarts a running or stopped container.
+
+### 19. Rename a Container
+
+```bash
+docker rename <old_name> <new_name>
+```
+Renames a Docker container.
+
+### 20. Stop All Running Containers
+
+```bash
+docker stop $(docker ps -q)
+```
+Stops all running Docker containers.
+
+### 21. Remove All Stopped Containers
+
+```bash
+docker rm $(docker ps -a -q)
+```
+Removes all stopped Docker containers.
+
+### 22. Remove All Images
+
+```bash
+docker rmi $(docker images -q)
+```
+Removes all Docker images from your local machine.
+
+### 23. Build an Image from a Dockerfile
+
+```bash
+docker build -t <image_name> .
+```
+Builds a Docker image from a Dockerfile in the current directory.
+
+### 24. Tag an Image
+
+```bash
+docker tag <image_id> <repository>/<image_name>:<tag>
+```
+Tags a Docker image.
+
+### 25. Push an Image to Docker Hub
+
+```bash
+docker push <repository>/<image_name>:<tag>
+```
+Pushes a tagged image to Docker Hub.
+
+### 26. Save an Image to a Tar File
+
+```bash
+docker save -o <path_to_tar_file> <image_name>
+```
+Saves a Docker image to a tar file.
+
+### 27. Load an Image from a Tar File
+
+```bash
+docker load -i <path_to_tar_file>
+```
+Loads a Docker image from a tar file.
+
+### 28. Show Docker System Information
+
+```bash
+docker info
+```
+Displays system-wide information about Docker.
+
+### 29. Prune Unused Containers, Networks, and Images
+
+```bash
+docker system prune
+```
+Removes all stopped containers, unused networks, and dangling images.
+
+### 30. Prune Unused Volumes
+
+```bash
+docker volume prune
+```
+Removes all unused local volumes.
+
+### 31. Create a Volume
+
+```bash
+docker volume create <volume_name>
+```
+Creates a Docker volume.
+
+### 32. List Volumes
+
+```bash
+docker volume ls
+```
+Lists all Docker volumes.
+
+### 33. Inspect a Volume
+
+```bash
+docker volume inspect <volume_name>
+```
+Displays detailed information about a Docker volume.
+
+### 34. Remove a Volume
+
+```bash
+docker volume rm <volume_name>
+```
+Removes a Docker volume.
+
+### 35. Create a Network
+
+```bash
+docker network create <network_name>
+```
+Creates a Docker network.
+
+### 36. List Networks
+
+```bash
+docker network ls
+```
+Lists all Docker networks.
+
+### 37. Inspect a Network
+
+```bash
+docker network inspect <network_name>
+```
+Displays detailed information about a Docker network.
+
+### 38. Connect a Container to a Network
+
+```bash
+docker network connect <network_name> <container_id>
+```
+Connects a container to a Docker network.
+
+### 39. Disconnect a Container from a Network
+
+```bash
+docker network disconnect <network_name> <container_id>
+```
+Disconnects a container from a Docker network.
+
+### 40. Remove a Network
+
+```bash
+docker network rm <network_name>
+```
+Removes a Docker network.
+
+### 41. Export a Container to a Tar File
+
+```bash
+docker export <container_id> -o <path_to_tar_file>
+```
+Exports a container’s filesystem to a tar file.
+
+### 42. Import a Container from a Tar File
+
+```bash
+docker import <path_to_tar_file>
+```
+Imports the contents of a tar file as a Docker image.
+
+### 43. Commit Changes to a Container
+
+```bash
+docker commit <container_id> <new_image_name>
+```
+Creates a new image from a container’s changes.
+
+### 44. Run a Container in Detached Mode
+
+```bash
+docker run -d <image_name>
+```
+Runs a container in the background.
+
+### 45. Map Ports from Host to Container
+
+```bash
+docker run -p <host_port>:<container_port> <image_name>
+```
+Maps a port on the host to a port on the container.
+
+### 46. Set Environment Variables
+
+```bash
+docker run -e <env_var>=<value> <image_name>
+```
+Sets environment variables in a container.
+
+### 47. Mount a Host Directory as a Data Volume
+
+```bash
+docker run -v <host_dir>:<container_dir> <image_name>
+```
+Mounts a host directory as a data volume in a container.
+
+### 48. Display Disk Usage
+
+```bash
+docker system df
+```
+Displays Docker disk usage.
+
+### 49. Check for Docker Updates
+
+```bash
+docker version
+```
+Displays installed Docker version and checks for updates.
+
+### 50. Monitor Docker Events
+
+```bash
+docker events
+```
+Displays real-time events from the Docker server.
