@@ -34,6 +34,8 @@ This article focuses on setting up essential Kubernetes tools on an EC2 VM. Part
 
 ## Tools and Libraries for Kubernetes Installation
 
+### Shell Script
+
 The following shell script automates the installation of several essential tools for working with Kubernetes.
 
 \`\`\`bash
@@ -112,10 +114,27 @@ else
 fi
 \`\`\`
 
+## Making the Shell Script Executable
+
+To make the shell script executable, run the following command:
+
+\`\`\`bash
+chmod +x k8install.sh
+\`\`\`
+
+## Converting the Script to Unix Format
+
+If you encounter format issues, use \`dos2unix\` to convert the script:
+
+\`\`\`bash
+dos2unix k8install.sh
+\`\`\`
+
 ## Explanation of Methods in the Script
 
 ### \`install_kubectl\`
 This method installs \`kubectl\`, the command-line tool for interacting with Kubernetes clusters. It downloads the latest stable release of \`kubectl\`, makes it executable, and moves it to \`/usr/local/bin\`.
+
 \`\`\`bash
 install_kubectl() {
     echo "Installing kubectl..."
@@ -128,6 +147,7 @@ install_kubectl() {
 
 ### \`install_kubens\`
 This method installs \`kubens\` and \`kubectx\`, tools for managing Kubernetes contexts and namespaces. It clones the repository, creates symbolic links for the tools, and ensures they are accessible from \`/usr/local/bin\`.
+
 \`\`\`bash
 install_kubens() {
     echo "Installing kubens and kubectx..."
@@ -140,6 +160,7 @@ install_kubens() {
 
 ### \`install_helm\`
 This method installs Helm, a package manager for Kubernetes. It downloads the Helm installation script, makes it executable, and runs it to install Helm.
+
 \`\`\`bash
 install_helm() {
     echo "Installing Helm..."
@@ -152,6 +173,7 @@ install_helm() {
 
 ### \`install_eksctl\`
 This method installs \`eksctl\`, a CLI tool for managing AWS EKS clusters. It downloads the latest release, extracts it, and moves it to \`/usr/local/bin\`.
+
 \`\`\`bash
 install_eksctl() {
     echo "Installing eksctl..."
