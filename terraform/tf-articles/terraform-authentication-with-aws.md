@@ -1,8 +1,6 @@
 
 # Terraform AWS Authentication
 
-## Terraform AWS Authentication
-
 Terraform, an open-source infrastructure as code tool, allows users to define and provision data center infrastructure using a high-level configuration language. For authenticating with AWS, Terraform can leverage several methods such as environment variables, shared credentials files, or directly specifying credentials within the configuration files. The most common and secure approach is using environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and optionally `AWS_SESSION_TOKEN`) or the shared credentials file located at `~/.aws/credentials`. Terraform also supports assuming IAM roles by specifying the `role_arn` and `source_profile` in the provider configuration, enabling cross-account access and enhanced security management.
 
 ## Best Practices
