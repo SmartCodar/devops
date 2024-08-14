@@ -327,10 +327,5 @@ git push origin --tags
 
 ## Conclusion
 
-This Article has guided you through the process of setting up and using Git on a Windows system via the command line. By following these steps, you can efficiently manage your projects, collaborate with others, and maintain control over your version history.
-
-For further exploration, consider looking into more advanced Git topics such as rebasing, stashing, and submodules.
-
+ToDO:
 ---
-
-This Article is designed for publication on GitHub, providing a comprehensive setup process for using Git on a Windows system.
